@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f8;
+  --foreground: #16232e;
+  --steel-900: #0f1f2e;
+  --steel-800: #16314a;
+  --steel-700: #1e3a5f;
+  --steel-600: #2c4f72;
+  --steel-500: #3c6690;
+  --steel-100: #e4ecf2;
+  --signal-yellow: #ffc72c;
+  --signal-yellow-dark: #e0a800;
+  --danger: #c0392b;
+  --success: #1f8a4c;
+  --card: #ffffff;
+  --border: #d7e0e7;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-steel-900: var(--steel-900);
+  --color-steel-800: var(--steel-800);
+  --color-steel-700: var(--steel-700);
+  --color-steel-600: var(--steel-600);
+  --color-steel-500: var(--steel-500);
+  --color-steel-100: var(--steel-100);
+  --color-signal: var(--signal-yellow);
+  --color-signal-dark: var(--signal-yellow-dark);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+::selection {
+  background: var(--signal-yellow);
+  color: var(--steel-900);
+}
