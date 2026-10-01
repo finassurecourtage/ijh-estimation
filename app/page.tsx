@@ -6,6 +6,7 @@ import { useEstimate } from "@/hooks/useEstimate";
 import { compressImageFile } from "@/lib/compress-image";
 import { DEFAULT_ROOM_NAMES } from "@/lib/constants";
 import { VolumeGauge } from "@/components/VolumeGauge";
+import { PriceEstimate } from "@/components/PriceEstimate";
 import { RoomSection } from "@/components/RoomSection";
 import { ContactFormModal } from "@/components/ContactFormModal";
 import type { AnalyzePhotoResult, ContactInfo, EstimateRoom } from "@/lib/types";
@@ -166,6 +167,8 @@ export default function Home() {
 
       <div className="max-w-xl mx-auto px-4 pt-4 space-y-4">
         <VolumeGauge totalM3={totalM3} />
+
+        <PriceEstimate totalM3={totalM3} />
 
         <p className="text-xs text-steel-700 bg-steel-100 rounded-lg px-3 py-2">
           Estimation indicative à ±20 %, volume confirmé lors du devis.

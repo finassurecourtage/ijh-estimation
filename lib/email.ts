@@ -1,5 +1,10 @@
 import type { ContactInfo, EstimateRoom } from "./types";
 import { CONTAINER_20_PIEDS_M3, CONTAINER_40_PIEDS_M3 } from "./constants";
+import { estimatePrice } from "./pricing";
+
+function formatEuros(value: number): string {
+  return value.toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " €";
+}
 
 export function computeTotalVolume(rooms: EstimateRoom[]): number {
   return rooms.reduce(
@@ -25,6 +30,7 @@ export function buildEstimateEmailHtml(
   const total = computeTotalVolume(rooms);
   const tauxC20 = Math.min(999, Math.round((total / CONTAINER_20_PIEDS_M3) * 100));
   const tauxC40 = Math.min(999, Math.round((total / CONTAINER_40_PIEDS_M3) * 100));
+  const { priceLow, priceHigh } = estimatePrice(total);
 
   const roomsHtml = rooms
     .map((room) => {
@@ -89,7 +95,8 @@ export function buildEstimateEmailHtml(
       <div style="background:#e4ecf2;border-radius:8px;padding:16px;margin:20px 0;">
         <p style="margin:0;font-size:15px;">Volume total estimé : <strong style="color:#1e3a5f;font-size:20px;">${total.toFixed(2)} m³</strong></p>
         <p style="margin:6px 0 0;font-size:13px;color:#445;">≈ ${tauxC20}% d'un conteneur 20 pieds (28 m³) · ≈ ${tauxC40}% d'un conteneur 40 pieds (58 m³)</p>
-        <p style="margin:6px 0 0;font-size:12px;color:#889;">Estimation indicative à ±20 %, volume confirmé lors du devis.</p>
+        <p style="margin:10px 0 0;font-size:15px;">Budget transport estimé : <strong style="color:#1e3a5f;">${formatEuros(priceLow)} – ${formatEuros(priceHigh)}</strong></p>
+        <p style="margin:6px 0 0;font-size:12px;color:#889;">Estimation indicative à ±20 %, volume et prix confirmés lors du devis.</p>
       </div>
 
       ${roomsHtml}

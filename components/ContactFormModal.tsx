@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import type { ContactInfo } from "@/lib/types";
+import { estimatePrice } from "@/lib/pricing";
+
+function formatEuros(value: number): string {
+  return value.toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " €";
+}
 
 interface ContactFormModalProps {
   totalM3: number;
@@ -28,6 +33,7 @@ export function ContactFormModal({
   onSubmit,
 }: ContactFormModalProps) {
   const [contact, setContact] = useState<ContactInfo>(emptyContact);
+  const { priceLow, priceHigh } = estimatePrice(totalM3);
 
   function update<K extends keyof ContactInfo>(key: K, value: ContactInfo[K]) {
     setContact((prev) => ({ ...prev, [key]: value }));
@@ -56,6 +62,8 @@ export function ContactFormModal({
         <form onSubmit={handleSubmit} className="p-4 space-y-3">
           <p className="text-sm text-steel-700 bg-steel-100 rounded-lg px-3 py-2">
             Volume estimé : <strong>{totalM3.toFixed(2)} m³</strong>
+            <br />
+            Budget estimé : <strong>{formatEuros(priceLow)} – {formatEuros(priceHigh)}</strong>
           </p>
 
           <Field label="Nom complet" required>
