@@ -7,10 +7,27 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const title = "Estimation de volume — IJH Transport";
+const description =
+  "Estimez en quelques photos le volume de votre déménagement vers Israël et recevez votre estimation indicative par email.";
+
 export const metadata: Metadata = {
-  title: "Estimation de volume — IJH Transport",
-  description:
-    "Estimez en quelques photos le volume de votre déménagement vers Israël et recevez votre estimation indicative par email.",
+  metadataBase: new URL("https://ijh-estimation.vercel.app"),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    locale: "fr_FR",
+    type: "website",
+    images: [{ url: "/ijh-logo.png", width: 1200, height: 1200, alt: "IJH Transport" }],
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+    images: ["/ijh-logo.png"],
+  },
 };
 
 export const viewport: Viewport = {
