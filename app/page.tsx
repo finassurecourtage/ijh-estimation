@@ -155,7 +155,7 @@ export default function Home() {
           />
           <div>
             <p className="text-xs text-signal font-semibold tracking-wide uppercase">
-              IJH Transport · Ashdod
+              IJH Transport
             </p>
             <h1 className="text-lg font-bold leading-tight">
               Estimation de volume de déménagement
@@ -208,13 +208,13 @@ export default function Home() {
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddRoom(newRoomName)}
-              placeholder="Nom de la pièce (ex. Chambre enfant)"
-              className="input flex-1"
+              placeholder="Nom de la pièce"
+              className="input flex-1 min-w-0"
             />
             <button
               type="button"
               onClick={() => handleAddRoom(newRoomName)}
-              className="bg-steel-700 text-white rounded-lg px-4 font-semibold shrink-0"
+              className="bg-steel-700 text-white rounded-lg px-4 font-semibold shrink-0 whitespace-nowrap"
             >
               Ajouter
             </button>
