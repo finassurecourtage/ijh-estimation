@@ -2,12 +2,15 @@
 
 import { useRef, useState } from "react";
 import type { EstimateRoom } from "@/lib/types";
+import type { Dictionary, LocalizedStandardObject } from "@/lib/i18n";
 import { ObjectRow } from "./ObjectRow";
 import { PhotoThumb } from "./PhotoThumb";
 import { AddObjectPicker } from "./AddObjectPicker";
 
 interface RoomSectionProps {
   room: EstimateRoom;
+  dict: Dictionary;
+  standardObjects: LocalizedStandardObject[];
   onRename: (nom: string) => void;
   onRemoveRoom: () => void;
   onPhotosSelected: (files: FileList) => void;
@@ -21,6 +24,8 @@ interface RoomSectionProps {
 
 export function RoomSection({
   room,
+  dict,
+  standardObjects,
   onRename,
   onRemoveRoom,
   onPhotosSelected,
@@ -81,7 +86,7 @@ export function RoomSection({
         <button
           type="button"
           onClick={onRemoveRoom}
-          aria-label={`Supprimer la pièce ${room.nom}`}
+          aria-label={dict.room.deleteRoomAria(room.nom)}
           className="shrink-0 w-8 h-8 rounded-full text-steel-600 flex items-center justify-center"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -115,7 +120,7 @@ export function RoomSection({
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z" />
               <circle cx="12" cy="13" r="4" />
             </svg>
-            Prendre une photo
+            {dict.room.takePhoto}
           </button>
           <button
             type="button"
@@ -127,7 +132,7 @@ export function RoomSection({
               <circle cx="9" cy="9" r="2" />
               <path d="m21 15-5-5L5 21" />
             </svg>
-            Galerie
+            {dict.room.gallery}
           </button>
         </div>
 
@@ -137,6 +142,7 @@ export function RoomSection({
               <PhotoThumb
                 key={photo.id}
                 photo={photo}
+                dict={dict}
                 onRetry={() => onRetryPhoto(photo.id)}
                 onRemove={() => onRemovePhoto(photo.id)}
               />
@@ -155,18 +161,17 @@ export function RoomSection({
             <ObjectRow
               key={o.id}
               object={o}
+              dict={dict}
               onIncrement={() => onIncrementObject(o.id)}
               onDecrement={() => onDecrementObject(o.id)}
               onRemove={() => onRemoveObject(o.id)}
             />
           ))}</div>
         ) : (
-          <p className="text-sm text-steel-600 italic py-2">
-            Aucun objet pour l&apos;instant. Prenez une photo ou ajoutez un objet manuellement.
-          </p>
+          <p className="text-sm text-steel-600 italic py-2">{dict.room.noObjectsYet}</p>
         )}
 
-        <AddObjectPicker onAdd={onAddManualObject} />
+        <AddObjectPicker dict={dict} standardObjects={standardObjects} onAdd={onAddManualObject} />
       </div>
     </section>
   );

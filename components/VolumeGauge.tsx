@@ -1,17 +1,21 @@
 import { CONTAINER_20_PIEDS_M3, CONTAINER_40_PIEDS_M3 } from "@/lib/constants";
+import type { Dictionary } from "@/lib/i18n";
 
 interface VolumeGaugeProps {
   totalM3: number;
+  dict: Dictionary;
 }
 
 function ContainerBar({
   label,
   capacity,
   totalM3,
+  usableSuffix,
 }: {
   label: string;
   capacity: number;
   totalM3: number;
+  usableSuffix: string;
 }) {
   const ratio = totalM3 / capacity;
   const pct = Math.min(100, Math.round(ratio * 100));
@@ -34,18 +38,20 @@ function ContainerBar({
           }}
         />
       </div>
-      <p className="text-[11px] text-steel-100/70 mt-0.5">{capacity} m³ utiles</p>
+      <p className="text-[11px] text-steel-100/70 mt-0.5">
+        {capacity} {usableSuffix}
+      </p>
     </div>
   );
 }
 
-export function VolumeGauge({ totalM3 }: VolumeGaugeProps) {
+export function VolumeGauge({ totalM3, dict }: VolumeGaugeProps) {
   return (
     <div className="bg-steel-700 text-white rounded-xl p-4 shadow-md">
       <div className="flex items-end justify-between mb-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-steel-100/80">
-            Volume total estimé
+            {dict.volumeGauge.totalLabel}
           </p>
           <p className="text-3xl font-bold leading-tight">
             {totalM3.toFixed(2)} <span className="text-lg font-medium">m³</span>
@@ -53,8 +59,18 @@ export function VolumeGauge({ totalM3 }: VolumeGaugeProps) {
         </div>
       </div>
       <div className="flex gap-4 bg-steel-800/60 rounded-lg p-3">
-        <ContainerBar label="Conteneur 20 pieds" capacity={CONTAINER_20_PIEDS_M3} totalM3={totalM3} />
-        <ContainerBar label="Conteneur 40 pieds" capacity={CONTAINER_40_PIEDS_M3} totalM3={totalM3} />
+        <ContainerBar
+          label={dict.volumeGauge.container20}
+          capacity={CONTAINER_20_PIEDS_M3}
+          totalM3={totalM3}
+          usableSuffix={dict.volumeGauge.usableSuffix}
+        />
+        <ContainerBar
+          label={dict.volumeGauge.container40}
+          capacity={CONTAINER_40_PIEDS_M3}
+          totalM3={totalM3}
+          usableSuffix={dict.volumeGauge.usableSuffix}
+        />
       </div>
     </div>
   );

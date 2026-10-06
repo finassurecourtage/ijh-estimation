@@ -3,17 +3,19 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useEstimate } from "@/hooks/useEstimate";
+import { useLocale } from "@/hooks/useLocale";
 import { compressImageFile } from "@/lib/compress-image";
-import { DEFAULT_ROOM_NAMES } from "@/lib/constants";
 import { VolumeGauge } from "@/components/VolumeGauge";
 import { PriceEstimate } from "@/components/PriceEstimate";
 import { RoomSection } from "@/components/RoomSection";
 import { ContactFormModal } from "@/components/ContactFormModal";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import type { AnalyzePhotoResult, ContactInfo, EstimateRoom } from "@/lib/types";
 
 export default function Home() {
   const estimate = useEstimate();
+  const { locale, setLocale, dir, intl, dict, standardObjects, defaultRoomNames } = useLocale();
   const [showContactForm, setShowContactForm] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
@@ -31,8 +33,8 @@ export default function Home() {
 
   const suggestedNames = useMemo(() => {
     const used = new Set(estimate.rooms.map((r) => r.nom));
-    return DEFAULT_ROOM_NAMES.filter((n) => !used.has(n));
-  }, [estimate.rooms]);
+    return defaultRoomNames.filter((n) => !used.has(n));
+  }, [estimate.rooms, defaultRoomNames]);
 
   async function analyzeAndMerge(room: EstimateRoom, photoId: string, dataUrl: string) {
     estimate.setPhotoStatus(room.id, photoId, "analyzing");
@@ -40,11 +42,11 @@ export default function Home() {
       const res = await fetch("/api/analyze-photo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photoDataUrl: dataUrl, roomName: room.nom }),
+        body: JSON.stringify({ photoDataUrl: dataUrl, roomName: room.nom, locale }),
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.error || "Analyse impossible.");
+        throw new Error(data?.error || dict.errors.analyzeFailed);
       }
       const result = data.result as AnalyzePhotoResult;
       estimate.mergeAnalysisIntoRoom(room.id, result);
@@ -54,7 +56,7 @@ export default function Home() {
         room.id,
         photoId,
         "error",
-        err instanceof Error ? err.message : "Erreur inconnue",
+        err instanceof Error ? err.message : dict.errors.unknown,
       );
     }
   }
@@ -67,12 +69,7 @@ export default function Home() {
         void analyzeAndMerge(room, photoId, dataUrl);
       } catch {
         const photoId = estimate.addPendingPhoto(room.id, "", file.name);
-        estimate.setPhotoStatus(
-          room.id,
-          photoId,
-          "error",
-          "Ce fichier n'a pas pu être traité comme une image.",
-        );
+        estimate.setPhotoStatus(room.id, photoId, "error", dict.room.unknownFileError);
       }
     }
   }
@@ -101,13 +98,13 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.error || "Envoi impossible.");
+        throw new Error(data?.error || dict.errors.sendFailed);
       }
       setSendSuccess(true);
       setShowContactForm(false);
       estimate.clearAll();
     } catch (err) {
-      setSendError(err instanceof Error ? err.message : "Erreur inconnue.");
+      setSendError(err instanceof Error ? err.message : dict.contactForm.genericError);
     } finally {
       setSending(false);
     }
@@ -120,25 +117,22 @@ export default function Home() {
 
   if (sendSuccess) {
     return (
-      <main className="flex-1 flex items-center justify-center p-6 bg-background">
-        <WhatsAppButton />
+      <main dir={dir} className="flex-1 flex items-center justify-center p-6 bg-background">
+        <WhatsAppButton dict={dict} />
         <div className="max-w-sm text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/10 flex items-center justify-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5">
               <path d="M20 6 9 17l-5-5" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-steel-900 mb-2">Demande envoyée !</h1>
-          <p className="text-steel-700 text-sm mb-6">
-            Merci, votre estimation a bien été transmise à IJH Transport. Nous vous
-            recontacterons rapidement pour confirmer votre devis.
-          </p>
+          <h1 className="text-xl font-bold text-steel-900 mb-2">{dict.success.title}</h1>
+          <p className="text-steel-700 text-sm mb-6">{dict.success.message}</p>
           <button
             type="button"
             onClick={() => setSendSuccess(false)}
             className="bg-steel-700 text-white font-semibold rounded-lg px-5 py-2.5"
           >
-            Nouvelle estimation
+            {dict.success.newEstimate}
           </button>
         </div>
       </main>
@@ -146,8 +140,8 @@ export default function Home() {
   }
 
   return (
-    <main className="flex-1 bg-background pb-28">
-      <WhatsAppButton />
+    <main dir={dir} className="flex-1 bg-background pb-28">
+      <WhatsAppButton dict={dict} />
       <header className="bg-steel-800 text-white px-4 py-4 sticky top-0 z-10 shadow-md">
         <div className="max-w-xl mx-auto flex items-center gap-3">
           <Image
@@ -157,30 +151,31 @@ export default function Home() {
             height={40}
             className="rounded bg-white/10 object-contain shrink-0"
           />
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-xs text-signal font-semibold tracking-wide uppercase">
               IJH Transport
             </p>
-            <h1 className="text-lg font-bold leading-tight">
-              Estimation de volume de déménagement
-            </h1>
+            <h1 className="text-lg font-bold leading-tight">{dict.header.title}</h1>
           </div>
+          <LanguageSwitcher locale={locale} onChange={setLocale} />
         </div>
       </header>
 
       <div className="max-w-xl mx-auto px-4 pt-4 space-y-4">
-        <VolumeGauge totalM3={totalM3} />
+        <VolumeGauge totalM3={totalM3} dict={dict} />
 
-        <PriceEstimate totalM3={totalM3} />
+        <PriceEstimate totalM3={totalM3} dict={dict} intl={intl} />
 
         <p className="text-xs text-steel-700 bg-steel-100 rounded-lg px-3 py-2">
-          Estimation indicative à ±20 %, volume confirmé lors du devis.
+          {dict.disclaimer}
         </p>
 
         {estimate.rooms.map((room) => (
           <RoomSection
             key={room.id}
             room={room}
+            dict={dict}
+            standardObjects={standardObjects}
             onRename={(nom) => estimate.renameRoom(room.id, nom)}
             onRemoveRoom={() => estimate.removeRoom(room.id)}
             onPhotosSelected={(files) => handlePhotosSelected(room, files)}
@@ -194,7 +189,7 @@ export default function Home() {
         ))}
 
         <section className="bg-card rounded-xl border border-dashed border-steel-500 p-4">
-          <h2 className="text-sm font-semibold text-steel-800 mb-2">Ajouter une pièce</h2>
+          <h2 className="text-sm font-semibold text-steel-800 mb-2">{dict.addRoom.title}</h2>
           {suggestedNames.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {suggestedNames.slice(0, 6).map((name) => (
@@ -214,7 +209,7 @@ export default function Home() {
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddRoom(newRoomName)}
-              placeholder="Nom de la pièce"
+              placeholder={dict.addRoom.placeholder}
               className="input flex-1 min-w-0"
             />
             <button
@@ -222,7 +217,7 @@ export default function Home() {
               onClick={() => handleAddRoom(newRoomName)}
               className="bg-steel-700 text-white rounded-lg px-4 font-semibold shrink-0 whitespace-nowrap"
             >
-              Ajouter
+              {dict.addRoom.addButton}
             </button>
           </div>
         </section>
@@ -238,8 +233,8 @@ export default function Home() {
               className="w-full bg-signal text-steel-900 font-bold rounded-lg py-3.5 text-base disabled:opacity-50 active:scale-[0.98] transition-transform"
             >
               {anyPhotoAnalyzing
-                ? "Analyse des photos en cours…"
-                : `Envoyer ma demande d'estimation (${totalM3.toFixed(2)} m³)`}
+                ? dict.submitBar.analyzing
+                : dict.submitBar.sendRequest(totalM3.toFixed(2))}
             </button>
           </div>
         </div>
@@ -250,6 +245,8 @@ export default function Home() {
           totalM3={totalM3}
           sending={sending}
           errorMessage={sendError}
+          dict={dict}
+          intl={intl}
           onClose={() => setShowContactForm(false)}
           onSubmit={handleSubmitContact}
         />

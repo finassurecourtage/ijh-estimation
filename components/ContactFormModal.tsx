@@ -3,15 +3,18 @@
 import { useState } from "react";
 import type { ContactInfo } from "@/lib/types";
 import { estimatePrice } from "@/lib/pricing";
+import type { Dictionary } from "@/lib/i18n";
 
-function formatEuros(value: number): string {
-  return value.toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " €";
+function formatEuros(value: number, intl: string): string {
+  return value.toLocaleString(intl, { maximumFractionDigits: 0 }) + " €";
 }
 
 interface ContactFormModalProps {
   totalM3: number;
   sending: boolean;
   errorMessage: string | null;
+  dict: Dictionary;
+  intl: string;
   onClose: () => void;
   onSubmit: (contact: ContactInfo) => void;
 }
@@ -29,6 +32,8 @@ export function ContactFormModal({
   totalM3,
   sending,
   errorMessage,
+  dict,
+  intl,
   onClose,
   onSubmit,
 }: ContactFormModalProps) {
@@ -48,11 +53,11 @@ export function ContactFormModal({
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="bg-card w-full sm:max-w-md sm:rounded-xl rounded-t-2xl max-h-[92vh] overflow-y-auto">
         <div className="sticky top-0 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-steel-900">Finaliser la demande</h2>
+          <h2 className="text-lg font-semibold text-steel-900">{dict.contactForm.title}</h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fermer"
+            aria-label={dict.contactForm.closeAria}
             className="w-8 h-8 rounded-full bg-steel-100 flex items-center justify-center text-steel-700"
           >
             ×
@@ -61,12 +66,15 @@ export function ContactFormModal({
 
         <form onSubmit={handleSubmit} className="p-4 space-y-3">
           <p className="text-sm text-steel-700 bg-steel-100 rounded-lg px-3 py-2">
-            Volume estimé : <strong>{totalM3.toFixed(2)} m³</strong>
+            {dict.contactForm.volumeLabel} : <strong>{totalM3.toFixed(2)} m³</strong>
             <br />
-            Budget estimé : <strong>{formatEuros(priceLow)} – {formatEuros(priceHigh)}</strong>
+            {dict.contactForm.budgetLabel} :{" "}
+            <strong>
+              {formatEuros(priceLow, intl)} – {formatEuros(priceHigh, intl)}
+            </strong>
           </p>
 
-          <Field label="Nom complet" required>
+          <Field label={dict.contactForm.fullName} required>
             <input
               required
               value={contact.nom}
@@ -76,7 +84,7 @@ export function ContactFormModal({
             />
           </Field>
 
-          <Field label="Téléphone" required>
+          <Field label={dict.contactForm.phone} required>
             <input
               required
               type="tel"
@@ -87,7 +95,7 @@ export function ContactFormModal({
             />
           </Field>
 
-          <Field label="Email" required>
+          <Field label={dict.contactForm.email} required>
             <input
               required
               type="email"
@@ -98,7 +106,7 @@ export function ContactFormModal({
             />
           </Field>
 
-          <Field label="Ville de départ (France)" required>
+          <Field label={dict.contactForm.departureCity} required>
             <input
               required
               value={contact.villeDepart}
@@ -108,7 +116,7 @@ export function ContactFormModal({
             />
           </Field>
 
-          <Field label="Date souhaitée de déménagement" required>
+          <Field label={dict.contactForm.desiredDate} required>
             <input
               required
               type="date"
@@ -118,7 +126,7 @@ export function ContactFormModal({
             />
           </Field>
 
-          <Field label="Commentaire (optionnel)">
+          <Field label={dict.contactForm.comment}>
             <textarea
               value={contact.commentaire}
               onChange={(e) => update("commentaire", e.target.value)}
@@ -138,7 +146,7 @@ export function ContactFormModal({
             disabled={sending}
             className="w-full bg-signal text-steel-900 font-bold rounded-lg py-3 mt-2 active:scale-[0.98] transition-transform disabled:opacity-60"
           >
-            {sending ? "Envoi en cours…" : "Envoyer ma demande d'estimation"}
+            {sending ? dict.contactForm.sending : dict.contactForm.submit}
           </button>
         </form>
       </div>

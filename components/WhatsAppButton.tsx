@@ -1,16 +1,20 @@
-const PHONE_NUMBER = "33784902625";
-const DEFAULT_MESSAGE =
-  "Bonjour, je souhaite plus de renseignements sur mon estimation de déménagement.";
+import type { Dictionary } from "@/lib/i18n";
 
-export function WhatsAppButton() {
-  const href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
+const PHONE_NUMBER = "33784902625";
+
+interface WhatsAppButtonProps {
+  dict: Dictionary;
+}
+
+export function WhatsAppButton({ dict }: WhatsAppButtonProps) {
+  const href = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(dict.whatsapp.message)}`;
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Contacter IJH Transport sur WhatsApp"
+      aria-label="WhatsApp"
       className="fixed bottom-24 right-4 z-30 w-14 h-14 rounded-full bg-[#25D366] shadow-lg flex items-center justify-center active:scale-95 transition-transform"
     >
       <svg width="30" height="30" viewBox="0 0 24 24" fill="white" aria-hidden="true">

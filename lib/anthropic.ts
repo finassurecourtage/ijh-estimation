@@ -32,6 +32,16 @@ Règles strictes :
 - Le champ "remarque" est optionnel : utilise-le uniquement pour signaler un point d'attention (accès difficile, objet fragile, désaccord possible sur une estimation), sinon laisse-le vide.
 - Réponds uniquement avec les objets réellement visibles sur la photo. N'invente rien.`;
 
+const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
+  en: `\n\nIMPORTANT: Write your answer in English. The "piece" (room name) and every object "nom" must be in English, even though these instructions above are in French.`,
+  he: `\n\nחשוב: כתוב את התשובה בעברית. השדה "piece" (שם החדר) וכל "nom" של אובייקט חייבים להיות בעברית, למרות שההוראות למעלה כתובות בצרפתית.`,
+};
+
+function buildSystemPrompt(locale?: string): string {
+  const extra = locale ? LANGUAGE_INSTRUCTIONS[locale] : undefined;
+  return extra ? SYSTEM_PROMPT + extra : SYSTEM_PROMPT;
+}
+
 function parseDataUrl(dataUrl: string): { mediaType: string; base64: string } {
   const match = /^data:(image\/[a-zA-Z+]+);base64,(.+)$/.exec(dataUrl);
   if (!match) {
@@ -52,6 +62,7 @@ function getClient(): Anthropic {
 export async function analyzeRoomPhoto(
   photoDataUrl: string,
   roomNameHint?: string,
+  locale?: string,
 ): Promise<AnalyzePhotoSchemaType> {
   const { mediaType, base64 } = parseDataUrl(photoDataUrl);
 
@@ -62,7 +73,7 @@ export async function analyzeRoomPhoto(
   const response = await getClient().messages.parse({
     model: MODEL,
     max_tokens: 4096,
-    system: SYSTEM_PROMPT,
+    system: buildSystemPrompt(locale),
     output_config: {
       format: zodOutputFormat(AnalyzePhotoSchema),
       effort: "low",

@@ -10,6 +10,7 @@ export const runtime = "nodejs";
 interface AnalyzeRequestBody {
   photoDataUrl?: string;
   roomName?: string;
+  locale?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
 
-  const { photoDataUrl, roomName } = body;
+  const { photoDataUrl, roomName, locale } = body;
 
   if (!photoDataUrl || typeof photoDataUrl !== "string") {
     return NextResponse.json({ error: "Aucune photo reçue." }, { status: 400 });
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const raw = await analyzeRoomPhoto(photoDataUrl, roomName);
+    const raw = await analyzeRoomPhoto(photoDataUrl, roomName, locale);
     const result = sanitizeAnalyzeResult(raw);
     return NextResponse.json({ result });
   } catch (error) {
