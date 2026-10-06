@@ -10,7 +10,6 @@ import { PriceEstimate } from "@/components/PriceEstimate";
 import { RoomSection } from "@/components/RoomSection";
 import { ContactFormModal } from "@/components/ContactFormModal";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
-import { CallButton } from "@/components/CallButton";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { OnboardingGuide } from "@/components/OnboardingGuide";
 import type { AnalyzePhotoResult, ContactInfo, EstimateRoom } from "@/lib/types";
@@ -121,7 +120,6 @@ export default function Home() {
     return (
       <main dir={dir} className="flex-1 flex items-center justify-center p-6 bg-background">
         <WhatsAppButton dict={dict} />
-        <CallButton />
         <div className="max-w-sm text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/10 flex items-center justify-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2.5">
@@ -145,7 +143,6 @@ export default function Home() {
   return (
     <main dir={dir} className="flex-1 bg-background pb-28">
       <WhatsAppButton dict={dict} />
-      <CallButton />
       <OnboardingGuide dict={dict} dir={dir} />
       <header className="bg-steel-800 text-white px-4 py-4 sticky top-0 z-10 shadow-md">
         <div className="max-w-xl mx-auto flex items-center gap-3">
