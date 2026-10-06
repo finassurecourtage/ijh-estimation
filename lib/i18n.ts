@@ -88,6 +88,17 @@ export interface Dictionary {
     analyzeFailed: string;
     sendFailed: string;
   };
+  onboarding: {
+    title: string;
+    steps: { title: string; text: string }[];
+    start: string;
+  };
+  confirmationEmail: {
+    subject: (volume: string) => string;
+    greeting: (name: string) => string;
+    intro: string;
+    footer: string;
+  };
 }
 
 const fr: Dictionary = {
@@ -156,6 +167,30 @@ const fr: Dictionary = {
     unknown: "Erreur inconnue",
     analyzeFailed: "Analyse impossible.",
     sendFailed: "Envoi impossible.",
+  },
+  onboarding: {
+    title: "Comment ça marche ?",
+    steps: [
+      {
+        title: "1. Photographiez chaque pièce",
+        text: "Prenez une photo (ou plusieurs) de chaque pièce à déménager, directement avec l'appareil photo ou depuis votre galerie.",
+      },
+      {
+        title: "2. L'IA détecte les objets",
+        text: "Chaque photo est analysée automatiquement : meubles, électroménager et cartons sont listés avec leur volume.",
+      },
+      {
+        title: "3. Recevez votre estimation",
+        text: "Volume total et budget indicatif s'affichent immédiatement. Envoyez votre demande, IJH Transport vous recontacte pour le devis définitif.",
+      },
+    ],
+    start: "Commencer",
+  },
+  confirmationEmail: {
+    subject: (volume) => `Votre estimation IJH Transport — ${volume} m³`,
+    greeting: (name) => `Bonjour ${name},`,
+    intro: "Nous avons bien reçu votre demande d'estimation. Voici un récapitulatif :",
+    footer: "IJH Transport vous recontactera prochainement pour confirmer votre devis définitif.",
   },
 };
 
@@ -226,6 +261,30 @@ const en: Dictionary = {
     analyzeFailed: "Analysis failed.",
     sendFailed: "Could not send.",
   },
+  onboarding: {
+    title: "How does it work?",
+    steps: [
+      {
+        title: "1. Photograph each room",
+        text: "Take one or more photos of each room to be moved, straight from your camera or your gallery.",
+      },
+      {
+        title: "2. AI detects the items",
+        text: "Each photo is analyzed automatically: furniture, appliances and boxes are listed with their volume.",
+      },
+      {
+        title: "3. Get your estimate",
+        text: "Total volume and indicative budget appear instantly. Send your request and IJH Transport will contact you for the final quote.",
+      },
+    ],
+    start: "Get started",
+  },
+  confirmationEmail: {
+    subject: (volume) => `Your IJH Transport estimate — ${volume} m³`,
+    greeting: (name) => `Hello ${name},`,
+    intro: "We have received your estimate request. Here is a summary:",
+    footer: "IJH Transport will contact you shortly to confirm your final quote.",
+  },
 };
 
 const he: Dictionary = {
@@ -293,6 +352,30 @@ const he: Dictionary = {
     unknown: "שגיאה לא ידועה",
     analyzeFailed: "הניתוח נכשל.",
     sendFailed: "השליחה נכשלה.",
+  },
+  onboarding: {
+    title: "איך זה עובד?",
+    steps: [
+      {
+        title: "1. צלמו כל חדר",
+        text: "צלמו תמונה אחת או יותר של כל חדר שצריך להעביר, ישירות מהמצלמה או מהגלריה שלכם.",
+      },
+      {
+        title: "2. הבינה המלאכותית מזהה את הפריטים",
+        text: "כל תמונה מנותחת אוטומטית: רהיטים, מכשירי חשמל וקרטונים מופיעים ברשימה עם הנפח שלהם.",
+      },
+      {
+        title: "3. קבלו את ההערכה שלכם",
+        text: "הנפח הכולל והתקציב המשוער מופיעים מיד. שלחו את הבקשה שלכם ו-IJH Transport תיצור איתכם קשר להצעת מחיר סופית.",
+      },
+    ],
+    start: "בואו נתחיל",
+  },
+  confirmationEmail: {
+    subject: (volume) => `ההערכה שלך מ-IJH Transport — ${volume} מ"ק`,
+    greeting: (name) => `שלום ${name},`,
+    intro: "קיבלנו את בקשת ההערכה שלך. הנה סיכום:",
+    footer: "IJH Transport ייצור איתך קשר בקרוב לאישור הצעת המחיר הסופית.",
   },
 };
 

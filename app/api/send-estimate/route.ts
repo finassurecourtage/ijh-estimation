@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
-import { buildEstimateEmailHtml, computeTotalVolume } from "@/lib/email";
+import {
+  buildClientConfirmationEmailHtml,
+  buildEstimateEmailHtml,
+  computeTotalVolume,
+} from "@/lib/email";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import type { ContactInfo, EstimateRoom } from "@/lib/types";
+import { getDictionary, type Locale } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
@@ -12,6 +17,11 @@ const SEND_LIMIT_PER_HOUR = 10;
 interface SendEstimateBody {
   contact?: ContactInfo;
   rooms?: EstimateRoom[];
+  locale?: Locale;
+}
+
+function isValidLocale(value: unknown): value is Locale {
+  return value === "fr" || value === "en" || value === "he";
 }
 
 function isValidEmail(value: string): boolean {
@@ -52,7 +62,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
 
-  const { contact, rooms } = body;
+  const { contact, rooms, locale } = body;
+  const clientLocale: Locale = isValidLocale(locale) ? locale : "fr";
 
   if (!validateContact(contact)) {
     return NextResponse.json(
@@ -117,6 +128,22 @@ export async function POST(request: NextRequest) {
         { error: "L'envoi de l'email a échoué. Réessayez dans un instant." },
         { status: 502 },
       );
+    }
+
+    // Email de confirmation au client, dans sa langue. Non bloquant : si ça
+    // échoue, la demande est tout de même considérée comme envoyée (IJH l'a
+    // déjà reçue).
+    try {
+      const confirmationHtml = buildClientConfirmationEmailHtml(contact, rooms, clientLocale);
+      const dict = getDictionary(clientLocale);
+      await resend.emails.send({
+        from: process.env.EMAIL_EXPEDITEUR || "IJH Transport <estimation@ijhtransport.com>",
+        to: contact.email,
+        subject: dict.confirmationEmail.subject(total.toFixed(1)),
+        html: confirmationHtml,
+      });
+    } catch (confirmationError) {
+      console.error("[send-estimate] confirmation email error:", confirmationError);
     }
 
     return NextResponse.json({ ok: true });

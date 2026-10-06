@@ -1,9 +1,10 @@
 import type { ContactInfo, EstimateRoom } from "./types";
 import { CONTAINER_20_PIEDS_M3, CONTAINER_40_PIEDS_M3 } from "./constants";
 import { estimatePrice } from "./pricing";
+import { getDictionary, getLocaleMeta, type Locale } from "./i18n";
 
-function formatEuros(value: number): string {
-  return value.toLocaleString("fr-FR", { maximumFractionDigits: 0 }) + " €";
+function formatEuros(value: number, intl = "fr-FR"): string {
+  return value.toLocaleString(intl, { maximumFractionDigits: 0 }) + " €";
 }
 
 export function computeTotalVolume(rooms: EstimateRoom[]): number {
@@ -100,6 +101,65 @@ export function buildEstimateEmailHtml(
       </div>
 
       ${roomsHtml}
+    </div>
+  </div>`;
+}
+
+export function buildClientConfirmationEmailHtml(
+  contact: ContactInfo,
+  rooms: EstimateRoom[],
+  locale: Locale,
+): string {
+  const dict = getDictionary(locale);
+  const meta = getLocaleMeta(locale);
+  const total = computeTotalVolume(rooms);
+  const { priceLow, priceHigh } = estimatePrice(total);
+  const dirAttr = meta.dir === "rtl" ? ' dir="rtl"' : "";
+  const align = meta.dir === "rtl" ? "right" : "left";
+
+  const roomsHtml = rooms
+    .map((room) => {
+      const roomTotal = room.objets.reduce(
+        (sum, o) => sum + o.quantite * o.volumeUnitaireM3,
+        0,
+      );
+      const rows = room.objets
+        .map(
+          (o) => `
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:${align};">${escapeHtml(o.nom)}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:center;">${o.quantite}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:${align === "left" ? "right" : "left"};">${(o.quantite * o.volumeUnitaireM3).toFixed(2)} m³</td>
+          </tr>`,
+        )
+        .join("");
+
+      return `
+      <h3 style="color:#1e3a5f;margin:20px 0 6px;text-align:${align};">${escapeHtml(room.nom)} — ${roomTotal.toFixed(2)} m³</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;" dir="${meta.dir}">
+        <tbody>${rows || `<tr><td colspan="3" style="padding:6px 10px;color:#888;">—</td></tr>`}</tbody>
+      </table>`;
+    })
+    .join("");
+
+  return `
+  <div${dirAttr} style="font-family:Arial,Helvetica,sans-serif;max-width:680px;margin:0 auto;color:#16232e;text-align:${align};">
+    <div style="background:#1e3a5f;padding:20px 24px;">
+      <h1 style="color:#ffc72c;margin:0;font-size:20px;">IJH Transport</h1>
+    </div>
+    <div style="padding:20px 24px;">
+      <p style="font-size:15px;">${escapeHtml(dict.confirmationEmail.greeting(contact.nom))}</p>
+      <p style="font-size:14px;color:#445;">${escapeHtml(dict.confirmationEmail.intro)}</p>
+
+      <div style="background:#e4ecf2;border-radius:8px;padding:16px;margin:16px 0;">
+        <p style="margin:0;font-size:15px;">${dict.volumeGauge.totalLabel} : <strong style="color:#1e3a5f;font-size:20px;">${total.toFixed(2)} m³</strong></p>
+        <p style="margin:10px 0 0;font-size:15px;">${dict.priceEstimate.label} : <strong style="color:#1e3a5f;">${formatEuros(priceLow, meta.intl)} – ${formatEuros(priceHigh, meta.intl)}</strong></p>
+        <p style="margin:6px 0 0;font-size:12px;color:#889;">${dict.disclaimer}</p>
+      </div>
+
+      ${roomsHtml}
+
+      <p style="font-size:13px;color:#445;margin-top:24px;">${escapeHtml(dict.confirmationEmail.footer)}</p>
     </div>
   </div>`;
 }
