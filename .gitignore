@@ -42,3 +42,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# fichiers temporaires Office (lock files)
+~$*
+
+# documents marketing hors code applicatif
+*_influenceuse.md
