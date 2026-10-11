@@ -157,7 +157,7 @@ const fr: Dictionary = {
   success: {
     title: "Demande envoyée !",
     message:
-      "Merci, votre estimation a bien été transmise à IJH Transport. Nous vous recontacterons rapidement pour confirmer votre devis.",
+      "Merci, votre demande a bien été transmise à IJH Transport. Vous allez recevoir un devis détaillé par email dans les plus brefs délais.",
     newEstimate: "Nouvelle estimation",
   },
   whatsapp: {
@@ -250,7 +250,7 @@ const en: Dictionary = {
   success: {
     title: "Request sent!",
     message:
-      "Thank you, your estimate has been sent to IJH Transport. We will contact you shortly to confirm your quote.",
+      "Thank you, your request has been sent to IJH Transport. You will receive a detailed quote by email very shortly.",
     newEstimate: "New estimate",
   },
   whatsapp: {
@@ -342,7 +342,7 @@ const he: Dictionary = {
   },
   success: {
     title: "הבקשה נשלחה!",
-    message: "תודה, ההערכה שלך נשלחה ל-IJH Transport. ניצור איתך קשר בקרוב לאישור הצעת המחיר.",
+    message: "תודה, הבקשה שלך נשלחה ל-IJH Transport. תקבל/י הצעת מחיר מפורטת באימייל בקרוב מאוד.",
     newEstimate: "הערכה חדשה",
   },
   whatsapp: {
