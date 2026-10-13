@@ -36,6 +36,9 @@ export interface Dictionary {
     label: string;
     disclaimer: string;
   };
+  weightEstimate: {
+    label: string;
+  };
   room: {
     takePhoto: string;
     gallery: string;
@@ -46,6 +49,7 @@ export interface Dictionary {
     decreaseAria: (name: string) => string;
     increaseAria: (name: string) => string;
     removeObjectAria: (name: string) => string;
+    weightSuffix: string;
     photoError: string;
     photoRetry: string;
     removePhotoAria: string;
@@ -69,6 +73,7 @@ export interface Dictionary {
     phone: string;
     email: string;
     departureCity: string;
+    arrivalCity: string;
     desiredDate: string;
     comment: string;
     sending: string;
@@ -115,6 +120,9 @@ const fr: Dictionary = {
     disclaimer:
       "Tarif indicatif groupage maritime France → Israël, porte à porte. Hors assurance et formalités douanières. Devis définitif établi par IJH Transport.",
   },
+  weightEstimate: {
+    label: "Poids total estimé",
+  },
   room: {
     takePhoto: "Prendre une photo",
     gallery: "Galerie",
@@ -125,6 +133,7 @@ const fr: Dictionary = {
     decreaseAria: (name) => `Diminuer la quantité de ${name}`,
     increaseAria: (name) => `Augmenter la quantité de ${name}`,
     removeObjectAria: (name) => `Supprimer ${name}`,
+    weightSuffix: "kg / unité",
     photoError: "Erreur",
     photoRetry: "Relancer",
     removePhotoAria: "Supprimer la photo",
@@ -148,6 +157,7 @@ const fr: Dictionary = {
     phone: "Téléphone",
     email: "Email",
     departureCity: "Ville de départ (France)",
+    arrivalCity: "Ville de livraison (Israël)",
     desiredDate: "Date souhaitée de déménagement",
     comment: "Commentaire (optionnel)",
     sending: "Envoi en cours…",
@@ -208,6 +218,9 @@ const en: Dictionary = {
     disclaimer:
       "Indicative rate for sea freight groupage France → Israel, door to door. Excludes insurance and customs fees. Final quote issued by IJH Transport.",
   },
+  weightEstimate: {
+    label: "Estimated Total Weight",
+  },
   room: {
     takePhoto: "Take a photo",
     gallery: "Gallery",
@@ -218,6 +231,7 @@ const en: Dictionary = {
     decreaseAria: (name) => `Decrease quantity of ${name}`,
     increaseAria: (name) => `Increase quantity of ${name}`,
     removeObjectAria: (name) => `Remove ${name}`,
+    weightSuffix: "kg / unit",
     photoError: "Error",
     photoRetry: "Retry",
     removePhotoAria: "Remove photo",
@@ -241,6 +255,7 @@ const en: Dictionary = {
     phone: "Phone",
     email: "Email",
     departureCity: "Departure city (France)",
+    arrivalCity: "Delivery city (Israel)",
     desiredDate: "Desired moving date",
     comment: "Comment (optional)",
     sending: "Sending…",
@@ -301,6 +316,9 @@ const he: Dictionary = {
     disclaimer:
       "תעריף אינדיקטיבי להובלה ימית בקבוצה צרפת → ישראל, מדלת לדלת. לא כולל ביטוח ועמלות מכס. הצעת מחיר סופית תינתן על ידי IJH Transport.",
   },
+  weightEstimate: {
+    label: "משקל כולל משוער",
+  },
   room: {
     takePhoto: "צלם תמונה",
     gallery: "גלריה",
@@ -311,6 +329,7 @@ const he: Dictionary = {
     decreaseAria: (name) => `הפחת כמות של ${name}`,
     increaseAria: (name) => `הוסף כמות של ${name}`,
     removeObjectAria: (name) => `הסר ${name}`,
+    weightSuffix: "ק״ג ליחידה",
     photoError: "שגיאה",
     photoRetry: "נסה שוב",
     removePhotoAria: "הסר תמונה",
@@ -334,6 +353,7 @@ const he: Dictionary = {
     phone: "טלפון",
     email: "אימייל",
     departureCity: "עיר יציאה (צרפת)",
+    arrivalCity: "עיר מסירה (ישראל)",
     desiredDate: "תאריך הובלה רצוי",
     comment: "הערה (אופציונלי)",
     sending: "שולח…",
@@ -389,42 +409,44 @@ export interface LocalizedStandardObject {
   id: string;
   nom: string;
   volumeUnitaireM3: number;
+  poidsUnitaireKg: number;
 }
 
 interface StandardObjectSeed {
   id: string;
   volumeUnitaireM3: number;
+  poidsUnitaireKg: number;
   names: Record<Locale, string>;
 }
 
 const STANDARD_OBJECT_SEEDS: StandardObjectSeed[] = [
-  { id: "sofa3", volumeUnitaireM3: 2, names: { fr: "Canapé 3 places", en: "3-seat sofa", he: "ספה תלת-מושבית" } },
-  { id: "sofa2", volumeUnitaireM3: 1.5, names: { fr: "Canapé 2 places", en: "2-seat sofa", he: "ספה דו-מושבית" } },
-  { id: "armchair", volumeUnitaireM3: 0.5, names: { fr: "Fauteuil", en: "Armchair", he: "כורסה" } },
-  { id: "coffeeTable", volumeUnitaireM3: 0.3, names: { fr: "Table basse", en: "Coffee table", he: "שולחן סלון" } },
-  { id: "diningTable", volumeUnitaireM3: 1, names: { fr: "Table à manger", en: "Dining table", he: "שולחן אוכל" } },
-  { id: "chair", volumeUnitaireM3: 0.2, names: { fr: "Chaise", en: "Chair", he: "כיסא" } },
-  { id: "sideboard", volumeUnitaireM3: 1.5, names: { fr: "Buffet / bahut", en: "Sideboard", he: "מזנון" } },
-  { id: "bookcase", volumeUnitaireM3: 1, names: { fr: "Bibliothèque", en: "Bookcase", he: "ספרייה" } },
-  { id: "desk", volumeUnitaireM3: 0.8, names: { fr: "Bureau", en: "Desk", he: "שולחן כתיבה" } },
-  { id: "doubleBed", volumeUnitaireM3: 2, names: { fr: "Lit double", en: "Double bed", he: "מיטה זוגית" } },
-  { id: "singleBed", volumeUnitaireM3: 1, names: { fr: "Lit simple", en: "Single bed", he: "מיטה יחיד" } },
-  { id: "mattress", volumeUnitaireM3: 0.5, names: { fr: "Matelas", en: "Mattress", he: "מזרן" } },
-  { id: "wardrobe2", volumeUnitaireM3: 1.5, names: { fr: "Armoire 2 portes", en: "2-door wardrobe", he: "ארון 2 דלתות" } },
-  { id: "wardrobe3", volumeUnitaireM3: 2, names: { fr: "Armoire 3 portes", en: "3-door wardrobe", he: "ארון 3 דלתות" } },
-  { id: "dresser", volumeUnitaireM3: 0.5, names: { fr: "Commode", en: "Dresser", he: "שידה" } },
-  { id: "fridge", volumeUnitaireM3: 1, names: { fr: "Réfrigérateur", en: "Refrigerator", he: "מקרר" } },
-  { id: "freezer", volumeUnitaireM3: 0.8, names: { fr: "Congélateur", en: "Freezer", he: "מקפיא" } },
-  { id: "washer", volumeUnitaireM3: 0.5, names: { fr: "Lave-linge", en: "Washing machine", he: "מכונת כביסה" } },
-  { id: "dishwasher", volumeUnitaireM3: 0.4, names: { fr: "Lave-vaisselle", en: "Dishwasher", he: "מדיח כלים" } },
-  { id: "oven", volumeUnitaireM3: 0.3, names: { fr: "Four / cuisinière", en: "Oven / stove", he: "תנור / כיריים" } },
-  { id: "microwave", volumeUnitaireM3: 0.1, names: { fr: "Micro-ondes", en: "Microwave", he: "מיקרוגל" } },
-  { id: "tv", volumeUnitaireM3: 0.3, names: { fr: "Téléviseur", en: "TV", he: "טלוויזיה" } },
-  { id: "bike", volumeUnitaireM3: 0.4, names: { fr: "Vélo", en: "Bicycle", he: "אופניים" } },
-  { id: "suitcase", volumeUnitaireM3: 0.15, names: { fr: "Valise", en: "Suitcase", he: "מזוודה" } },
-  { id: "mirror", volumeUnitaireM3: 0.1, names: { fr: "Miroir / tableau", en: "Mirror / painting", he: "מראה / ציור" } },
-  { id: "plant", volumeUnitaireM3: 0.2, names: { fr: "Plante", en: "Plant", he: "צמח" } },
-  { id: "box", volumeUnitaireM3: 0.1, names: { fr: "Carton standard", en: "Standard box", he: "קרטון סטנדרטי" } },
+  { id: "sofa3", volumeUnitaireM3: 2, poidsUnitaireKg: 60, names: { fr: "Canapé 3 places", en: "3-seat sofa", he: "ספה תלת-מושבית" } },
+  { id: "sofa2", volumeUnitaireM3: 1.5, poidsUnitaireKg: 45, names: { fr: "Canapé 2 places", en: "2-seat sofa", he: "ספה דו-מושבית" } },
+  { id: "armchair", volumeUnitaireM3: 0.5, poidsUnitaireKg: 20, names: { fr: "Fauteuil", en: "Armchair", he: "כורסה" } },
+  { id: "coffeeTable", volumeUnitaireM3: 0.3, poidsUnitaireKg: 15, names: { fr: "Table basse", en: "Coffee table", he: "שולחן סלון" } },
+  { id: "diningTable", volumeUnitaireM3: 1, poidsUnitaireKg: 30, names: { fr: "Table à manger", en: "Dining table", he: "שולחן אוכל" } },
+  { id: "chair", volumeUnitaireM3: 0.2, poidsUnitaireKg: 5, names: { fr: "Chaise", en: "Chair", he: "כיסא" } },
+  { id: "sideboard", volumeUnitaireM3: 1.5, poidsUnitaireKg: 50, names: { fr: "Buffet / bahut", en: "Sideboard", he: "מזנון" } },
+  { id: "bookcase", volumeUnitaireM3: 1, poidsUnitaireKg: 35, names: { fr: "Bibliothèque", en: "Bookcase", he: "ספרייה" } },
+  { id: "desk", volumeUnitaireM3: 0.8, poidsUnitaireKg: 25, names: { fr: "Bureau", en: "Desk", he: "שולחן כתיבה" } },
+  { id: "doubleBed", volumeUnitaireM3: 2, poidsUnitaireKg: 50, names: { fr: "Lit double", en: "Double bed", he: "מיטה זוגית" } },
+  { id: "singleBed", volumeUnitaireM3: 1, poidsUnitaireKg: 30, names: { fr: "Lit simple", en: "Single bed", he: "מיטה יחיד" } },
+  { id: "mattress", volumeUnitaireM3: 0.5, poidsUnitaireKg: 20, names: { fr: "Matelas", en: "Mattress", he: "מזרן" } },
+  { id: "wardrobe2", volumeUnitaireM3: 1.5, poidsUnitaireKg: 55, names: { fr: "Armoire 2 portes", en: "2-door wardrobe", he: "ארון 2 דלתות" } },
+  { id: "wardrobe3", volumeUnitaireM3: 2, poidsUnitaireKg: 75, names: { fr: "Armoire 3 portes", en: "3-door wardrobe", he: "ארון 3 דלתות" } },
+  { id: "dresser", volumeUnitaireM3: 0.5, poidsUnitaireKg: 25, names: { fr: "Commode", en: "Dresser", he: "שידה" } },
+  { id: "fridge", volumeUnitaireM3: 1, poidsUnitaireKg: 65, names: { fr: "Réfrigérateur", en: "Refrigerator", he: "מקרר" } },
+  { id: "freezer", volumeUnitaireM3: 0.8, poidsUnitaireKg: 45, names: { fr: "Congélateur", en: "Freezer", he: "מקפיא" } },
+  { id: "washer", volumeUnitaireM3: 0.5, poidsUnitaireKg: 55, names: { fr: "Lave-linge", en: "Washing machine", he: "מכונת כביסה" } },
+  { id: "dishwasher", volumeUnitaireM3: 0.4, poidsUnitaireKg: 40, names: { fr: "Lave-vaisselle", en: "Dishwasher", he: "מדיח כלים" } },
+  { id: "oven", volumeUnitaireM3: 0.3, poidsUnitaireKg: 30, names: { fr: "Four / cuisinière", en: "Oven / stove", he: "תנור / כיריים" } },
+  { id: "microwave", volumeUnitaireM3: 0.1, poidsUnitaireKg: 12, names: { fr: "Micro-ondes", en: "Microwave", he: "מיקרוגל" } },
+  { id: "tv", volumeUnitaireM3: 0.3, poidsUnitaireKg: 8, names: { fr: "Téléviseur", en: "TV", he: "טלוויזיה" } },
+  { id: "bike", volumeUnitaireM3: 0.4, poidsUnitaireKg: 15, names: { fr: "Vélo", en: "Bicycle", he: "אופניים" } },
+  { id: "suitcase", volumeUnitaireM3: 0.15, poidsUnitaireKg: 15, names: { fr: "Valise", en: "Suitcase", he: "מזוודה" } },
+  { id: "mirror", volumeUnitaireM3: 0.1, poidsUnitaireKg: 5, names: { fr: "Miroir / tableau", en: "Mirror / painting", he: "מראה / ציור" } },
+  { id: "plant", volumeUnitaireM3: 0.2, poidsUnitaireKg: 5, names: { fr: "Plante", en: "Plant", he: "צמח" } },
+  { id: "box", volumeUnitaireM3: 0.1, poidsUnitaireKg: 10, names: { fr: "Carton standard", en: "Standard box", he: "קרטון סטנדרטי" } },
 ];
 
 export function getStandardObjects(locale: Locale): LocalizedStandardObject[] {
@@ -432,6 +454,7 @@ export function getStandardObjects(locale: Locale): LocalizedStandardObject[] {
     id: seed.id,
     nom: seed.names[locale],
     volumeUnitaireM3: seed.volumeUnitaireM3,
+    poidsUnitaireKg: seed.poidsUnitaireKg,
   }));
 }
 

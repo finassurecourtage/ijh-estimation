@@ -8,6 +8,9 @@ export const MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024; // 8 Mo avant compression c
 export const MIN_VOLUME_M3 = 0.01;
 export const MAX_VOLUME_M3 = 10;
 
+export const MIN_WEIGHT_KG = 0.1;
+export const MAX_WEIGHT_KG = 300;
+
 export const LOCAL_STORAGE_KEY = "ijh-estimation-v1";
 
 // Les listes d'objets standards et de noms de pièces par défaut sont

@@ -40,6 +40,8 @@ function validateContact(contact: unknown): contact is ContactInfo {
     isValidEmail(c.email) &&
     typeof c.villeDepart === "string" &&
     c.villeDepart.trim().length > 0 &&
+    typeof c.villeArrivee === "string" &&
+    c.villeArrivee.trim().length > 0 &&
     typeof c.dateSouhaitee === "string" &&
     c.dateSouhaitee.trim().length > 0
   );
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
 
   if (!validateContact(contact)) {
     return NextResponse.json(
-      { error: "Merci de renseigner nom, téléphone, email valide, ville et date." },
+      { error: "Merci de renseigner nom, téléphone, email valide, villes et date." },
       { status: 400 },
     );
   }

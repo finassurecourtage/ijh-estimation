@@ -29,6 +29,10 @@ export function buildEstimateEmailHtml(
   rooms: EstimateRoom[],
 ): string {
   const total = computeTotalVolume(rooms);
+  const totalKg = rooms.reduce(
+    (sum, room) => sum + room.objets.reduce((s, o) => s + o.quantite * o.poidsUnitaireKg, 0),
+    0,
+  );
   const tauxC20 = Math.min(999, Math.round((total / CONTAINER_20_PIEDS_M3) * 100));
   const tauxC40 = Math.min(999, Math.round((total / CONTAINER_40_PIEDS_M3) * 100));
   const { priceLow, priceHigh } = estimatePrice(total);
@@ -46,7 +50,8 @@ export function buildEstimateEmailHtml(
             <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;">${escapeHtml(o.nom)}</td>
             <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:center;">${o.quantite}</td>
             <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:center;">${o.volumeUnitaireM3} m³</td>
-            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:right;">${(o.quantite * o.volumeUnitaireM3).toFixed(2)} m³</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:center;">${o.poidsUnitaireKg} kg</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #e4ecf2;text-align:right;">${(o.quantite * o.volumeUnitaireM3).toFixed(2)} m³ / ${(o.quantite * o.poidsUnitaireKg).toFixed(0)} kg</td>
           </tr>`,
         )
         .join("");
@@ -64,10 +69,11 @@ export function buildEstimateEmailHtml(
             <th style="padding:6px 10px;text-align:left;">Objet</th>
             <th style="padding:6px 10px;">Qté</th>
             <th style="padding:6px 10px;">Vol. unitaire</th>
+            <th style="padding:6px 10px;">Poids unitaire</th>
             <th style="padding:6px 10px;text-align:right;">Sous-total</th>
           </tr>
         </thead>
-        <tbody>${rows || '<tr><td colspan="4" style="padding:6px 10px;color:#888;">Aucun objet listé</td></tr>'}</tbody>
+        <tbody>${rows || '<tr><td colspan="5" style="padding:6px 10px;color:#888;">Aucun objet listé</td></tr>'}</tbody>
       </table>
       <p style="font-size:12px;color:#667;margin:6px 0 0;">${room.photos.length} photo(s) jointe(s) pour cette pièce</p>`;
     })
@@ -85,6 +91,7 @@ export function buildEstimateEmailHtml(
         <tr><td style="padding:2px 12px 2px 0;color:#667;">Téléphone</td><td>${escapeHtml(contact.telephone)}</td></tr>
         <tr><td style="padding:2px 12px 2px 0;color:#667;">Email</td><td>${escapeHtml(contact.email)}</td></tr>
         <tr><td style="padding:2px 12px 2px 0;color:#667;">Ville de départ</td><td>${escapeHtml(contact.villeDepart)}</td></tr>
+        <tr><td style="padding:2px 12px 2px 0;color:#667;">Ville de livraison (Israël)</td><td>${escapeHtml(contact.villeArrivee)}</td></tr>
         <tr><td style="padding:2px 12px 2px 0;color:#667;">Date souhaitée</td><td>${escapeHtml(contact.dateSouhaitee)}</td></tr>
         ${
           contact.commentaire
@@ -96,6 +103,7 @@ export function buildEstimateEmailHtml(
       <div style="background:#e4ecf2;border-radius:8px;padding:16px;margin:20px 0;">
         <p style="margin:0;font-size:15px;">Volume total estimé : <strong style="color:#1e3a5f;font-size:20px;">${total.toFixed(2)} m³</strong></p>
         <p style="margin:6px 0 0;font-size:13px;color:#445;">≈ ${tauxC20}% d'un conteneur 20 pieds (28 m³) · ≈ ${tauxC40}% d'un conteneur 40 pieds (58 m³)</p>
+        <p style="margin:8px 0 0;font-size:15px;">Poids total estimé : <strong style="color:#1e3a5f;">${Math.round(totalKg)} kg</strong></p>
         <p style="margin:10px 0 0;font-size:15px;">Budget transport estimé : <strong style="color:#1e3a5f;">${formatEuros(priceLow)} – ${formatEuros(priceHigh)}</strong></p>
         <p style="margin:6px 0 0;font-size:12px;color:#889;">Estimation indicative à ±20 %, volume et prix confirmés lors du devis.</p>
       </div>
@@ -113,6 +121,10 @@ export function buildClientConfirmationEmailHtml(
   const dict = getDictionary(locale);
   const meta = getLocaleMeta(locale);
   const total = computeTotalVolume(rooms);
+  const totalKg = rooms.reduce(
+    (sum, room) => sum + room.objets.reduce((s, o) => s + o.quantite * o.poidsUnitaireKg, 0),
+    0,
+  );
   const { priceLow, priceHigh } = estimatePrice(total);
   const dirAttr = meta.dir === "rtl" ? ' dir="rtl"' : "";
   const align = meta.dir === "rtl" ? "right" : "left";
@@ -151,8 +163,14 @@ export function buildClientConfirmationEmailHtml(
       <p style="font-size:15px;">${escapeHtml(dict.confirmationEmail.greeting(contact.nom))}</p>
       <p style="font-size:14px;color:#445;">${escapeHtml(dict.confirmationEmail.intro)}</p>
 
+      <table style="font-size:14px;margin:0 0 16px;">
+        <tr><td style="padding:2px 12px 2px 0;color:#667;">${dict.contactForm.departureCity}</td><td>${escapeHtml(contact.villeDepart)}</td></tr>
+        <tr><td style="padding:2px 12px 2px 0;color:#667;">${dict.contactForm.arrivalCity}</td><td>${escapeHtml(contact.villeArrivee)}</td></tr>
+      </table>
+
       <div style="background:#e4ecf2;border-radius:8px;padding:16px;margin:16px 0;">
         <p style="margin:0;font-size:15px;">${dict.volumeGauge.totalLabel} : <strong style="color:#1e3a5f;font-size:20px;">${total.toFixed(2)} m³</strong></p>
+        <p style="margin:8px 0 0;font-size:15px;">${dict.weightEstimate.label} : <strong style="color:#1e3a5f;">${Math.round(totalKg)} kg</strong></p>
         <p style="margin:10px 0 0;font-size:15px;">${dict.priceEstimate.label} : <strong style="color:#1e3a5f;">${formatEuros(priceLow, meta.intl)} – ${formatEuros(priceHigh, meta.intl)}</strong></p>
         <p style="margin:6px 0 0;font-size:12px;color:#889;">${dict.disclaimer}</p>
       </div>

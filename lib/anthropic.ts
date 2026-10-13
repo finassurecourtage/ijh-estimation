@@ -11,6 +11,7 @@ const AnalyzePhotoSchema = z.object({
       nom: z.string(),
       quantite: z.number(),
       volume_unitaire_m3: z.number(),
+      poids_unitaire_kg: z.number(),
     }),
   ),
   remarque: z.string(),
@@ -28,6 +29,7 @@ Règles strictes :
 - Compte chaque objet une seule fois, même s'il apparaît partiellement visible ou en reflet.
 - Utilise des volumes unitaires réalistes et cohérents avec ces références standards du secteur (en m³) quand l'objet correspond : canapé 3 places 2, canapé 2 places 1.5, fauteuil 0.5, lit double 2, lit simple 1, matelas 0.5, armoire 2 portes 1.5, armoire 3 portes 2, commode 0.5, table à manger 1, chaise 0.2, table basse 0.3, bureau 0.8, réfrigérateur 1, congélateur 0.8, lave-linge 0.5, lave-vaisselle 0.4, four 0.3, micro-ondes 0.1, téléviseur 0.3, vélo 0.4, carton standard 0.1.
 - Pour un objet qui ne correspond à aucune référence, estime un volume raisonnable entre 0.01 et 10 m³ en te basant sur sa taille apparente dans la photo.
+- Estime aussi un poids unitaire réaliste en kg pour chaque objet ("poids_unitaire_kg"), cohérent avec ces références standards du secteur : canapé 3 places 60, canapé 2 places 45, fauteuil 20, lit double 50, lit simple 30, matelas 20, armoire 2 portes 55, armoire 3 portes 75, commode 25, table à manger 30, chaise 5, table basse 15, bureau 25, réfrigérateur 65, congélateur 45, lave-linge 55, lave-vaisselle 40, four 30, micro-ondes 12, téléviseur 8, vélo 15, carton standard 10. Pour un objet sans référence, estime un poids raisonnable entre 0.5 et 150 kg.
 - Le nom de la pièce ("piece") doit être une estimation courte du type de pièce visible (Salon, Cuisine, Chambre, Salle de bain, Bureau, Garage, etc.), ou le nom fourni par l'utilisateur s'il est donné.
 - Le champ "remarque" est optionnel : utilise-le uniquement pour signaler un point d'attention (accès difficile, objet fragile, désaccord possible sur une estimation), sinon laisse-le vide.
 - Réponds uniquement avec les objets réellement visibles sur la photo. N'invente rien.`;

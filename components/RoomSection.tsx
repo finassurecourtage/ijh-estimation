@@ -19,7 +19,7 @@ interface RoomSectionProps {
   onIncrementObject: (objectId: string) => void;
   onDecrementObject: (objectId: string) => void;
   onRemoveObject: (objectId: string) => void;
-  onAddManualObject: (nom: string, volumeUnitaireM3: number) => void;
+  onAddManualObject: (nom: string, volumeUnitaireM3: number, poidsUnitaireKg: number) => void;
 }
 
 export function RoomSection({

@@ -14,6 +14,7 @@ export interface EstimateObject {
   nom: string;
   quantite: number;
   volumeUnitaireM3: number;
+  poidsUnitaireKg: number;
   source: "ia" | "manuel";
 }
 
@@ -30,6 +31,7 @@ export interface ContactInfo {
   telephone: string;
   email: string;
   villeDepart: string;
+  villeArrivee: string;
   dateSouhaitee: string;
   commentaire?: string;
 }
@@ -43,6 +45,7 @@ export interface AnalyzePhotoResultObject {
   nom: string;
   quantite: number;
   volume_unitaire_m3: number;
+  poids_unitaire_kg: number;
 }
 
 export interface AnalyzePhotoResult {

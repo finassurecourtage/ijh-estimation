@@ -1,4 +1,4 @@
-import { MAX_VOLUME_M3, MIN_VOLUME_M3 } from "./constants";
+import { MAX_VOLUME_M3, MAX_WEIGHT_KG, MIN_VOLUME_M3, MIN_WEIGHT_KG } from "./constants";
 import type { AnalyzePhotoResult, AnalyzePhotoResultObject } from "./types";
 
 /**
@@ -28,7 +28,12 @@ export function sanitizeAnalyzeResult(raw: unknown): AnalyzePhotoResult {
       ? clamp(roundToHundredth(volumeBrut), MIN_VOLUME_M3, MAX_VOLUME_M3)
       : 0.1;
 
-    objets.push({ nom, quantite, volume_unitaire_m3 });
+    const poidsBrut = Number(o?.poids_unitaire_kg);
+    const poids_unitaire_kg = Number.isFinite(poidsBrut)
+      ? clamp(roundToHundredth(poidsBrut), MIN_WEIGHT_KG, MAX_WEIGHT_KG)
+      : 5;
+
+    objets.push({ nom, quantite, volume_unitaire_m3, poids_unitaire_kg });
   }
 
   return { piece, objets, remarque };

@@ -11,6 +11,7 @@ interface ObjectRowProps {
 
 export function ObjectRow({ object, dict, onIncrement, onDecrement, onRemove }: ObjectRowProps) {
   const sousTotal = object.quantite * object.volumeUnitaireM3;
+  const poidsTotal = object.quantite * object.poidsUnitaireKg;
 
   return (
     <div className="flex items-center gap-2 py-2 border-b border-border last:border-b-0">
@@ -18,6 +19,9 @@ export function ObjectRow({ object, dict, onIncrement, onDecrement, onRemove }: 
         <p className="text-sm font-medium text-foreground truncate">{object.nom}</p>
         <p className="text-xs text-steel-600">
           {object.volumeUnitaireM3} {dict.room.perUnit} · {sousTotal.toFixed(2)} m³
+        </p>
+        <p className="text-xs text-steel-600">
+          {object.poidsUnitaireKg} {dict.room.weightSuffix} · {poidsTotal.toFixed(0)} kg
         </p>
       </div>
       <div className="flex items-center gap-1.5 shrink-0">

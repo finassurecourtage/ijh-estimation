@@ -139,6 +139,7 @@ export function useEstimate() {
                 nom: o.nom,
                 quantite: o.quantite,
                 volumeUnitaireM3: o.volume_unitaire_m3,
+                poidsUnitaireKg: o.poids_unitaire_kg,
                 source: "ia",
               });
             }
@@ -151,7 +152,7 @@ export function useEstimate() {
   );
 
   const addManualObject = useCallback(
-    (roomId: string, nom: string, volumeUnitaireM3: number) => {
+    (roomId: string, nom: string, volumeUnitaireM3: number, poidsUnitaireKg: number) => {
       setState((prev) => ({
         rooms: prev.rooms.map((r) => {
           if (r.id !== roomId) return r;
@@ -171,6 +172,7 @@ export function useEstimate() {
             nom,
             quantite: 1,
             volumeUnitaireM3,
+            poidsUnitaireKg,
             source: "manuel",
           };
           return { ...r, objets: [...r.objets, newObject] };

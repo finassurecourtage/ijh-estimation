@@ -24,6 +24,7 @@ const emptyContact: ContactInfo = {
   telephone: "",
   email: "",
   villeDepart: "",
+  villeArrivee: "",
   dateSouhaitee: "",
   commentaire: "",
 };
@@ -111,6 +112,16 @@ export function ContactFormModal({
               required
               value={contact.villeDepart}
               onChange={(e) => update("villeDepart", e.target.value)}
+              className="input"
+              autoComplete="address-level2"
+            />
+          </Field>
+
+          <Field label={dict.contactForm.arrivalCity} required>
+            <input
+              required
+              value={contact.villeArrivee}
+              onChange={(e) => update("villeArrivee", e.target.value)}
               className="input"
               autoComplete="address-level2"
             />

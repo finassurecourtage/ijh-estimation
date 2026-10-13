@@ -7,6 +7,7 @@ import { useLocale } from "@/hooks/useLocale";
 import { compressImageFile } from "@/lib/compress-image";
 import { VolumeGauge } from "@/components/VolumeGauge";
 import { PriceEstimate } from "@/components/PriceEstimate";
+import { WeightEstimate } from "@/components/WeightEstimate";
 import { RoomSection } from "@/components/RoomSection";
 import { ContactFormModal } from "@/components/ContactFormModal";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
@@ -27,6 +28,15 @@ export default function Home() {
     () =>
       estimate.rooms.reduce(
         (sum, r) => sum + r.objets.reduce((s, o) => s + o.quantite * o.volumeUnitaireM3, 0),
+        0,
+      ),
+    [estimate.rooms],
+  );
+
+  const totalKg = useMemo(
+    () =>
+      estimate.rooms.reduce(
+        (sum, r) => sum + r.objets.reduce((s, o) => s + o.quantite * o.poidsUnitaireKg, 0),
         0,
       ),
     [estimate.rooms],
@@ -168,6 +178,8 @@ export default function Home() {
 
         <PriceEstimate totalM3={totalM3} dict={dict} intl={intl} />
 
+        <WeightEstimate totalKg={totalKg} dict={dict} />
+
         <p className="text-xs text-steel-700 bg-steel-100 rounded-lg px-3 py-2">
           {dict.disclaimer}
         </p>
@@ -186,7 +198,9 @@ export default function Home() {
             onIncrementObject={(objectId) => estimate.updateObjectQuantity(room.id, objectId, 1)}
             onDecrementObject={(objectId) => estimate.updateObjectQuantity(room.id, objectId, -1)}
             onRemoveObject={(objectId) => estimate.removeObject(room.id, objectId)}
-            onAddManualObject={(nom, vol) => estimate.addManualObject(room.id, nom, vol)}
+            onAddManualObject={(nom, vol, poids) =>
+              estimate.addManualObject(room.id, nom, vol, poids)
+            }
           />
         ))}
 
